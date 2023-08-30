@@ -84,23 +84,42 @@ class _GamePageState extends State<GamePage> {
   int startTime = 0;
   int endTime = 0;
 
-  void _handlePressDown() {
+  void _handleCenterButtonPressDown() {
     setState(() {
       startTime = DateTime.now().microsecondsSinceEpoch * 1000;
-      print(startTime);
+       randomArrow = getRandomArrow();
+       randomPhoto = getRandomPhoto();
+      print("starttime: $startTime");
     });
   }
-  
-  
-  void _handlePressUp() {
+
+  void _handleCenterButtonPressUp() {
     setState(() {
       endTime = DateTime.now().microsecondsSinceEpoch * 1000;
-      print(endTime);
-      int elapsedNanoseconds = endTime - startTime;
-
-      print("response time: $elapsedNanoseconds nanoseconds");
+      print("endTime: $endTime");
     });
   }
+
+  void _handleOneOfTheCircelsIsPressed() {
+    if (endTime > startTime) {
+      int elapsedNanoseconds = DateTime.now().microsecondsSinceEpoch * 1000 - endTime;
+      print("response time: $elapsedNanoseconds nanoseconds");
+     } 
+     //else {
+    //   print("Press and release the center button first.");
+    // }
+  }
+  
+  
+  // void _handlePressUp() {
+  //   setState(() {
+  //     endTime = DateTime.now().microsecondsSinceEpoch * 1000;
+  //     print(endTime);
+  //     int elapsedNanoseconds = endTime - startTime;
+
+  //     print("response time: $elapsedNanoseconds nanoseconds");
+  //   });
+  // }
  
 
   void cancelTimer() {
@@ -142,7 +161,7 @@ class _GamePageState extends State<GamePage> {
                     else{
                       print("correct answer");
                     }
-                    _handlePressUp();
+                   _handleOneOfTheCircelsIsPressed();
                     startTime = 0;
                     endTime = 0;
                     //randomArrow = getRandomArrow();
@@ -165,7 +184,8 @@ class _GamePageState extends State<GamePage> {
                 Expanded(
                   child: GestureDetector(
                      //onTapDown: (_) => _handlePressDown(),
-                      onTapUp: (_) => _handlePressUp(),
+                       onTapDown: (_) => _handleCenterButtonPressDown(),
+                       onTapUp: (_) => _handleCenterButtonPressUp(),
                       // onTapCancel: () {
                       // setState(() {
                       // startTime = 0;
@@ -191,24 +211,29 @@ class _GamePageState extends State<GamePage> {
                 ),
                 Expanded(
                   child: Center(
-                    child: ElevatedButton(
+                    child: GestureDetector(
                       
-                      onPressed: () {},
-                      onLongPress: () {
-                        setState(() {
-                          print("Holding");
-                           //startTimer();
-                            randomArrow = getRandomArrow();
-                            randomPhoto = getRandomPhoto();
-                            isButtonPressed = true;
-                        });
+                        onTapDown: (_) => _handleCenterButtonPressDown(),
+                        onTapUp: (_) => _handleCenterButtonPressUp(),
+                        // onLongPress: () {
+                        // setState(() {
+                        //   //print("Holding");
+                        //    //startTimer();
+                        //     randomArrow = getRandomArrow();
+                        //     randomPhoto = getRandomPhoto();
+                        //     isButtonPressed = true;
+                        // });
                       
-                      },
+                    // }, 
+                      child: Container(
+                      padding: EdgeInsets.all(20),
+                      color: Colors.blue,
                       // isButtonPressed = false,
                       child: const Text("keep holding!"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isButtonPressed?  const Color.fromARGB(240, 208, 19, 225): Colors.grey,
-                        padding: const EdgeInsets.all(100),
+                      // style: ElevatedButton.styleFrom(
+                      //   backgroundColor: isButtonPressed?  const Color.fromARGB(240, 208, 19, 225): Colors.grey,
+                      //   padding: const EdgeInsets.all(100),
+                      // ),
                       ),
                     ),
                   ),
@@ -232,7 +257,7 @@ class _GamePageState extends State<GamePage> {
                     else{
                       print("correct answer");
                     }
-                      _handlePressUp();
+                      _handleOneOfTheCircelsIsPressed();
                       startTime = 0;
                       endTime = 0;
                      //randomArrow = getRandomArrow();
