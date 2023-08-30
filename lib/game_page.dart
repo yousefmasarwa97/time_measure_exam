@@ -13,6 +13,7 @@ class GamePage extends StatefulWidget {
 bool israinbow=false;
 bool isRightarrow=false;
 bool isRedarrow=false;
+bool iscenterbuttonpressed=false;
 
 Icon getRandomArrow() {
   Random random = Random();
@@ -76,7 +77,8 @@ String getRandomPhoto() {
 
 class _GamePageState extends State<GamePage> {
   bool isButtonPressed = false;
-  Timer? longPressTimer;
+  bool iscenterbuttonpressed=false;
+  //Timer? longPressTimer;
   //DateTime? startTime;
   Icon randomArrow = getRandomArrow();
   String randomPhoto = getRandomPhoto(); 
@@ -89,14 +91,18 @@ class _GamePageState extends State<GamePage> {
       startTime = DateTime.now().microsecondsSinceEpoch * 1000;
        randomArrow = getRandomArrow();
        randomPhoto = getRandomPhoto();
-      print("starttime: $startTime");
+       isButtonPressed=true;
+      print("the time when the user pressed the center button: $startTime");
     });
   }
 
   void _handleCenterButtonPressUp() {
     setState(() {
       endTime = DateTime.now().microsecondsSinceEpoch * 1000;
-      print("endTime: $endTime");
+      isButtonPressed=false;
+      print("the time when the user released the center button: $endTime");
+      int time_of_holding_the_button=endTime-startTime;
+      print("time_of_holding_the_button:$time_of_holding_the_button");
     });
   }
 
@@ -108,6 +114,20 @@ class _GamePageState extends State<GamePage> {
      //else {
     //   print("Press and release the center button first.");
     // }
+  }
+
+  void _handleButtonPress() {
+    Future.delayed(Duration(seconds: 2), () {
+      setState(() {
+        iscenterbuttonpressed = true;
+      });
+    });
+  }
+
+  void _handleReturnToFirstPage() {
+    setState(() {
+      iscenterbuttonpressed = false;
+    });
   }
   
   
@@ -122,9 +142,9 @@ class _GamePageState extends State<GamePage> {
   // }
  
 
-  void cancelTimer() {
-    longPressTimer?.cancel();
-  }
+  // void cancelTimer() {
+  //   longPressTimer?.cancel();
+  // }
 
   // void startTimer() {
   //   startTime = DateTime.now();
@@ -144,7 +164,7 @@ class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
+      body:iscenterbuttonpressed ? Row(
         children: [
           Expanded(
             flex: 1,
@@ -162,6 +182,7 @@ class _GamePageState extends State<GamePage> {
                       print("correct answer");
                     }
                    _handleOneOfTheCircelsIsPressed();
+                   _handleReturnToFirstPage();
                     startTime = 0;
                     endTime = 0;
                     //randomArrow = getRandomArrow();
@@ -186,6 +207,7 @@ class _GamePageState extends State<GamePage> {
                      //onTapDown: (_) => _handlePressDown(),
                        onTapDown: (_) => _handleCenterButtonPressDown(),
                        onTapUp: (_) => _handleCenterButtonPressUp(),
+                      
                       // onTapCancel: () {
                       // setState(() {
                       // startTime = 0;
@@ -215,6 +237,9 @@ class _GamePageState extends State<GamePage> {
                       
                         onTapDown: (_) => _handleCenterButtonPressDown(),
                         onTapUp: (_) => _handleCenterButtonPressUp(),
+                      //    onLongPressDown:(_) => setState(() {
+                         
+                      //  }) ,
                         // onLongPress: () {
                         // setState(() {
                         //   //print("Holding");
@@ -227,7 +252,7 @@ class _GamePageState extends State<GamePage> {
                     // }, 
                       child: Container(
                       padding: EdgeInsets.all(20),
-                      color: Colors.blue,
+                      color: isButtonPressed? Color.fromARGB(253, 246, 254, 5) : Colors.blue, 
                       // isButtonPressed = false,
                       child: const Text("keep holding!"),
                       // style: ElevatedButton.styleFrom(
@@ -258,6 +283,7 @@ class _GamePageState extends State<GamePage> {
                       print("correct answer");
                     }
                       _handleOneOfTheCircelsIsPressed();
+                      _handleReturnToFirstPage();
                       startTime = 0;
                       endTime = 0;
                      //randomArrow = getRandomArrow();
@@ -274,8 +300,20 @@ class _GamePageState extends State<GamePage> {
             ),
           ),
         ],
-      ),
-      backgroundColor: Colors.black,
+      )
+      :GestureDetector(
+        
+                  onTapDown: (_) => _handleButtonPress(),
+                  child: Container(
+                    padding: EdgeInsets.all(20),
+                    color: Colors.blue,
+                    child: Text(
+                      'Press and Hold',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+       backgroundColor: Colors.black,
     );
   }
 }
